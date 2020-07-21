@@ -24,7 +24,7 @@ async def on_ready():
 async def on_member_join(member):
     await member.create_dm()
     await member.dm_channel.send(
-        f'Hi {member.name}, welcome to my Discord server!'
+        f'Hi {member.name}, welcome to Coding Club IIT Jammu Discord server. Pls Verify using !verify command followed by Name in quotes and entry number'
     )
 @bot.command()
 async def leave(member):
