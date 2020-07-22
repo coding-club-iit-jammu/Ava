@@ -5,8 +5,6 @@ jobs:
   - job: 'Test'
     pool:
       vmImage: 'ubuntu-latest'
-    strategy:
-      matrix:
     steps:
       - task: CopyFiles@2
         displayName: copying.....
