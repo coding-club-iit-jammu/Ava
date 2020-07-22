@@ -2,6 +2,12 @@ trigger:
   - azurepipe
 
 jobs:
+  - deployment: VMDeploy
+    displayName: web
+    environment:
+      name:  VM
+      resourceType: VirtualMachine
+      tags: web1
   - job: 'Test'
     pool:
       vmImage: 'ubuntu-latest'
