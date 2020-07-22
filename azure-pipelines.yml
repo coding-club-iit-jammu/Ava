@@ -12,6 +12,8 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+      - script: pwd
+        displayName: "looolllll"
       - task: CopyFiles@2
         displayName: copying.....
         inputs:
