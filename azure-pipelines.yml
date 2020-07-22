@@ -1,24 +1,23 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+jobs:  
+- deployment: VMDeploy
+  displayName: web
+  environment:
+    name:  vm
+    resourceType: VirtualMachine
+    tags: web1
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: CopyFiles@2
+          inputs:
+            contents: '**'
+            targetFolder: '/home/azureuser/Ava/'
+            overWrite: true
+        - script: |
+            cd /home/azureuser/Ava
+            source virtualenv_name/bin/activate
+            pip install -r reqirements.txt
 
-trigger:
-- master
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-steps:
-- task: CopyFiles@2
-  inputs:
-    contents: '**'
-    targetFolder: '/home/azureuser/Ava/'
-    overWrite: true
-- script: |
-    cd /home/azureuser/Ava
-    source virtualenv_name/bin/activate
-    pip install -r reqirements.txt
-
-- script: python ava.py
-  displayName: 'Run a multi-line script'
+        - script: python ava.py
+          displayName: 'Run a multi-line script'
