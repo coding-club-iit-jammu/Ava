@@ -5,7 +5,7 @@ jobs:
   - deployment: VMDeploy
     displayName: web
     environment:
-      name:  VM
+      name:  abhisvm
       resourceType: VirtualMachine
       tags: web1
   - job: 'Test'
@@ -18,7 +18,7 @@ jobs:
         displayName: copying.....
         inputs:
               contents: '**'
-              targetFolder: '/home/azureuser/Ava/'
+              targetFolder: '/home/AzureUser/Ava/'
               overWrite: true
 
       - script: |
