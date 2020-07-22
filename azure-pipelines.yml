@@ -2,7 +2,7 @@ jobs:
 - deployment: VMDeploy
   displayName: web
   environment:
-    name:  codingclubVM
+    name:  VM
     resourceType: VirtualMachine
     tags: web1
   strategy:
