@@ -1,0 +1,26 @@
+trigger:
+  - azurepipe
+
+jobs:
+  - job: 'Test'
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      matrix:
+    steps:
+      - task: CopyFiles@2
+        displayName: copying.....
+        inputs:
+              contents: '**'
+              targetFolder: '/home/azureuser/Ava/'
+              overWrite: true
+
+      - script: |
+          cd /home/azureuser/Ava
+          source virtualenv_name/bin/activate
+          pip install -r reqirements.txt
+        displayName: "Install requirements"
+      - task: UsePythonVersion@0
+        displayName: Use cached Python $(python.version) for tests.
+      - script: python ava.py
+        displayName: "now running"
