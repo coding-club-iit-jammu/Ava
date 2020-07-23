@@ -25,6 +25,7 @@ class Verify(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.cooldown(1, 60, commands.BucketType.channel)
     async def verify(self, ctx, name : str = "", entry_number : str = ""):
         guild = self.bot.get_guild(int(server))
         if(ctx.guild is not None):
