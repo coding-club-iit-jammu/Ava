@@ -12,6 +12,7 @@ DEPARTMENT_MESSAGE = int(os.getenv("DEPARTMENT_MESSAGE"))
 DEPARTMENT_CHANNEL = int(os.getenv("DEPARTMENT_CHANNEL"))
 LOG_CHANNEL = int(os.getenv("LOG_CHANNEL"))
 DEBUG = (os.getenv("DEBUG","") != "False" )
+AUTHOR = 664161180121825301
 
 DEPARTMENTS = [
     ('🤖', 'Competitive Coding'),
@@ -28,6 +29,7 @@ bot = commands.Bot(
     )
 
 bot.load_extension('script.verify')
+bot.load_extension('script.info')
 
 @bot.event
 async def on_ready():
@@ -52,11 +54,17 @@ async def on_member_join(member):
 
 @bot.command()
 async def leave(ctx):
+    if(ctx.message.author.id != AUTHOR):
+        return
     role = discord.utils.get(guild.roles, name = 'Verified')
     await dep_channel.set_permissions(role, read_messages=False )
     await ctx.send('Leaving server. BYE!')
-    await logs.print(f'{ctx.author.mention} leaving Server!')
+    await logs.print(f'{bot.user.mention} leaving Server! command from {ctx.author}.')
     await bot.close()
+
+@bot.command()
+async def ch(ctx):
+    await ctx.send(f"{ctx.author.id}")
 
 @bot.event
 async def on_raw_reaction_add(payload):

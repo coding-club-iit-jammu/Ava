@@ -1,4 +1,5 @@
 sudo pm2 delete ava
+sudo pm2 save
 cp -r /home/azureuser/azagent/_work/r1/a/_abhishek0220_Ava/* /home/azureuser/Ava/
 cd /home/azureuser/Ava/
 pip3 install -r reqirements.txt

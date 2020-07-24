@@ -79,11 +79,11 @@ class Verify(commands.Cog):
             user = {
                 'name' : name,
                 'entry' : entry_number,
-                'discordid' : ctx.author.id,
+                'discordid' : str(ctx.author.id),
                 'username' : ctx.author.name +'#'+ctx.author.discriminator,
                 'timestamp' : time.time()
             }
-            key_dat = {'discordid' : ctx.author.id}
+            key_dat = {'discordid' : str(ctx.author.id)}
             exist = db.member.update(key_dat, user, upsert=True)
             await member.add_roles(role)
             await ctx.send(f"verified {ctx.author}")
