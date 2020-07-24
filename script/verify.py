@@ -8,26 +8,38 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from pymongo import MongoClient
+
+from .log import log_emit
+
 uri = os.getenv('MONGODB')
 mongodb = MongoClient(uri)
 db = mongodb.CodingClub
+
+
+server = int(os.getenv("SERVER"))
+LOG_CHANNEL = int(os.getenv("LOG_CHANNEL"))
+DEBUG = (os.getenv("DEBUG","") != "False" )
 
 def random_with_N_digits(n):
     range_start = 10**(n-1)
     range_end = (10**n)-1
     return randint(range_start, range_end)
 
-server = os.getenv("SERVER")
-
 class Verify(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
+        
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        global logs, guild
+        guild = self.bot.get_guild(int(server))
+        logs = log_emit(LOG_CHANNEL, self.bot, DEBUG)
 
     @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.channel)
     async def verify(self, ctx, name : str = "", entry_number : str = ""):
-        guild = self.bot.get_guild(int(server))
+        
         if(ctx.guild is not None):
             return await ctx.send(f'Please DM for Verification')
         if(name == "" or entry_number ==""):
@@ -38,7 +50,10 @@ class Verify(commands.Cog):
         email = entry_number + "@iitjammu.ac.in"
         verf_msg = f"An email with Verification Code has been sent to {email}. Enter your code here within {timeout} minutes."
         code = random_with_N_digits(6)
+        
         print(ctx.author, "verification Started")
+        await logs.print(f'{ctx.author.mention} started Verification')
+
         message = Mail(
             from_email='Ava-noreply@iamabhishek.co.in',
             to_emails=email,
@@ -46,9 +61,12 @@ class Verify(commands.Cog):
             html_content= f'Thanks {entry_number} for creating account on Coding Club Discord Server,<br>Your Verification Code is : <b>{code}</b><br>This Code will Expire in 3 Minutes.<br><br>Sincerely,<br>Ava, BOT Coding Club'
             )
         try:
-            sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
-            response = sg.send(message)
-            print(response.status_code)
+            if(DEBUG == False):
+                sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
+                response = sg.send(message)
+                print(response.status_code)
+            else:
+                print(message)
         except Exception as e:
             print(e.message)
         await ctx.send(f'Name : {name}\nEntry Number : {entry_number}\n{verf_msg}')
@@ -69,10 +87,12 @@ class Verify(commands.Cog):
             exist = db.member.update(key_dat, user, upsert=True)
             await member.add_roles(role)
             await ctx.send(f"verified {ctx.author}")
+            await logs.print(f'{ctx.author.mention} verified')
         else:
             await ctx.send(f"not verified {ctx.author}")
+            await logs.print(f'{ctx.author.mention} verification failed')
 
 
 def setup(bot):
-    print("-----",server)
+    print("-----",server)   
     bot.add_cog(Verify(bot))
