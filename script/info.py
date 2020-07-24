@@ -58,7 +58,7 @@ class Info(commands.Cog):
                 out = "\tSorry no Member found"
             out = "```" + out + "```"
             await ctx.send(out)
-            if(users_len == 1):
+            if(users_len > 1):
                 dev_role = discord.utils.get(guild.roles, name="Core Team") 
                 await logs.print(f"{dev_role.mention} Error occured in searching userid {userid}. If you seeing this plz report this to ADMIN ASAP.")  
         elif(ver_type.lower() == "name"):
