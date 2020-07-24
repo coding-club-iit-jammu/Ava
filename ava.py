@@ -8,6 +8,7 @@ load_dotenv()
 server = os.getenv("SERVER")
 TOKEN = os.getenv('DISCORD_TOKEN')
 DEPARTMENT_MESSAGE = 735924857627213904
+DEPARTMENT_CHANNEL = 735879581541597204
 
 DEPARTMENTS = [
     ('🤖', 'Competitive Coding'),
@@ -28,6 +29,12 @@ bot.load_extension('script.verify')
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
+    dep_channel = bot.get_channel(735879581541597204)
+    guild = bot.get_guild(int(server))
+    role = discord.utils.get(guild.roles, name = 'Verified')
+    await dep_channel.set_permissions(role, read_messages=True )
+    print(f'{bot.user} ready to use...')
+
         
 @bot.event
 async def on_member_join(member):
@@ -37,9 +44,12 @@ async def on_member_join(member):
     )
 @bot.command()
 async def leave(member):
+    dep_channel = bot.get_channel(735879581541597204)
+    guild = bot.get_guild(int(server))
+    role = discord.utils.get(guild.roles, name = 'Verified')
+    await dep_channel.set_permissions(role, read_messages=False )
     await member.send('Leaving server. BYE!')
     await bot.close()
-    exit() 
 
 @bot.event
 async def on_raw_reaction_add(payload):
