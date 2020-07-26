@@ -1,3 +1,4 @@
+pwd
 sudo pm2 delete ava
 cp -r /home/azureuser/azagent/_work/r1/a/_abhishek0220_Ava/* /home/azureuser/Ava/
 cd /home/azureuser/Ava/
