@@ -25,7 +25,11 @@ def match(a, b):
         return True
     return False
 
-class Info(commands.Cog):
+def userdetail(user):
+        details = f"Name : {user['name']}\nEntry Number : {user['entry']}\nDiscord Id : {user['discordid']}\nUserName : {user['username']}\n\n"
+        return details
+
+class Infos(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
@@ -41,12 +45,13 @@ class Info(commands.Cog):
         if(len(member) < 3):
             return await ctx.send(f"{ctx.author.mention} Pls enter minimum of 3 charaters")
         con = False
+        _isrole = False
         if(re.search("^<@!.*>$", member)):
             userid = member[3:-1]
             con = True
         elif(re.search("^<@.*>$", member)):
             if(member[2] == '&'):
-                return await ctx.send(f"{ctx.author.mention} this command does not support roles as of now")
+                return await ctx.send(f"{ctx.author.mention} Invalid Mention")
             userid = member[2:-1]
             con = True
         elif(member.isnumeric()):
@@ -58,7 +63,7 @@ class Info(commands.Cog):
             out = ""
             for user in users:
                 users_len += 1
-                out = out + f"Name : {user['name']}\nEntry Number : {user['entry']}\nDiscord Id : {user['discordid']}\nUserName : {user['username']}\n\n"
+                out = out + userdetail(user)
             if(out == ""):
                 out = "\tSorry no Member found"
             out = "```" + out + "```"
@@ -74,13 +79,38 @@ class Info(commands.Cog):
                     users.append(user)
             out = ""
             for user in users:
-                out = out + f"Name : {user['name']}\nEntry Number : {user['entry']}\nDiscord Id : {user['discordid']}\nUserName : {user['username']}\n\n"
+                out = out + userdetail(user)
             if(len(users) == 0):
                 out = "\tSorry no Member found"
             else:
                 out = f"Found total {len(users)}\n\n" + out
             out = "```" + out + "```"
-            await ctx.send(out) 
+            await ctx.send(out)
+
+    @commands.command()
+    async def members(self, ctx,role : str):
+        try:
+            roleid = role[3:-1]
+            _role = guild.get_role(int(roleid))
+            all_members = _role.members
+        except:
+            return await ctx.send(f"{ctx.author.mention} Invalid Role")
+        all_users = db.member.find({}, {"name" : 1, "entry" : 1, "discordid" : 1})
+        user_dic = {}
+        for user in all_users:
+            user_dic[user['discordid']] = (user['name'], user['entry'])
+        out = f"Total {len(all_members)} members found\n\n"
+        for member in all_members:
+            detail = user_dic[str(member.id)]
+            name = detail[0][:15]
+            entry = detail[1]
+            between = " " * (15 - len(name))
+            tem = f"{name}{between}\t{entry}"
+            out = out + tem + "\n"
+        out = "```" + out + "```"
+        return await ctx.send(out)
+
+
 def setup(bot):
     print("info command added")   
-    bot.add_cog(Info(bot))
+    bot.add_cog(Infos(bot))

@@ -13,6 +13,12 @@ The discord bot for our Coding Club IIT Jammu discord(development server) writte
 ```
 DISCORD_TOKEN = <token>
 SERVER = <server_id>
+MONGODB = <mongodb_uri>
+DEBUG = "True"
+DEPARTMENT_CHANNEL = <department_selection_channel_id>
+LOG_CHANNEL = <log_channel_id>
+DEPARTMENT_MESSAGE = <department_selection_message>
+SENDGRID_API_KEY = <sendgrid_key_optional_with_DEBUG>
 ```
 You can create a demo server and a bot application for testing purpose. Details [here](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot).
 
