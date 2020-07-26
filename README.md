@@ -2,6 +2,16 @@
 The discord bot for our Coding Club IIT Jammu discord(development server) written in Python
 
 [![Build status](https://vsrm.dev.azure.com/abhishek0220/_apis/public/Release/badge/7a8e80e6-4b2a-4e0d-b9bc-7cc323c6c403/1/1)](https://dev.azure.com/abhishek0220/BOT_Ava/_release?definitionId=0)
+[![Python 3.6](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
+
+## Technology stack
+
+- Python 3.7
+- Database : Azure Cosmos DB
+- Database API - MongoDB API
+- Deploy: Azure Pipelines
+- Server: Azure Virtual Machine
+    
 # Instructions to Run locally and contribute
 1. Install [Python](https://www.python.org/downloads/).
 2. Clone this repository and open terminal, change directory to the repo.
