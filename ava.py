@@ -1,9 +1,11 @@
-import os
+import os, asyncio
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord.ext.commands import CommandNotFound
 from script.log import log_emit
+from script.pushemail import sendemails
+
 load_dotenv()
 
 server = os.getenv("SERVER")
@@ -33,11 +35,11 @@ bot.load_extension('script.info')
 
 @bot.event
 async def on_ready():
-    global logs, dep_channel, guild
+    global logs, dep_channel, guild, notify
     dep_channel = bot.get_channel(DEPARTMENT_CHANNEL)
     logs = log_emit(LOG_CHANNEL, bot, DEBUG)
+    notify = sendemails(bot, DEBUG)
     guild = bot.get_guild(int(server))
-
     role = discord.utils.get(guild.roles, name = 'Verified')
     await dep_channel.set_permissions(role, read_messages=True )
     await logs.print(f'{bot.user.mention} has connected to Discord!')
@@ -63,7 +65,7 @@ async def leave(ctx):
     await bot.close()
 
 @bot.command()
-async def ch(ctx):
+async def id(ctx):
     await ctx.send(f"{ctx.author.id}")
 
 @bot.event
@@ -80,6 +82,15 @@ async def on_raw_reaction_add(payload):
             await member.add_roles(role)
             return await logs.print(f"added {payload.member.mention} to {role}")
     print("other emoji")
+
+@bot.event
+async def on_message(message):
+    if("@here" in message.content):
+        core_role = discord.utils.get(guild.roles, name="Core Team") 
+        if(core_role in message.author.roles):
+            await notify.send(message)
+    await bot.process_commands(message)
+
 '''
 @bot.command()
 async def startup(ctx):
