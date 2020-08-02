@@ -50,7 +50,7 @@ class sendemails:
                 emb = discord.Embed(title="Email Sent", description = 'Above message emailed to all members in following channel successfully')
                 emb.set_footer(text='Email requested by: ' + message.author.name)
                 email_message = Mail(
-                    from_email='Ava-noreply@iamabhishek.co.in',
+                    from_email='Ava-noreply@iamabhishek.co',
                     to_emails=email_list,
                     subject=email_Subject,
                     html_content= f'{message.content}<br>-{message.author.name}<br><br>Sincerely,<br>Ava, BOT Coding Club'

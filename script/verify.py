@@ -55,7 +55,7 @@ class Verify(commands.Cog):
         await logs.print(f'{ctx.author.mention} started Verification')
 
         message = Mail(
-            from_email='Ava-noreply@iamabhishek.co.in',
+            from_email='Ava-noreply@iamabhishek.co',
             to_emails=email,
             subject='Coding Club Discord Server',
             html_content= f'Thanks {entry_number} for creating account on Coding Club Discord Server,<br>Your Verification Code is : <b>{code}</b><br>This Code will Expire in 3 Minutes.<br><br>Sincerely,<br>Ava, BOT Coding Club'
