@@ -84,6 +84,21 @@ async def on_raw_reaction_add(payload):
     print("other emoji")
 
 @bot.event
+async def on_raw_reaction_remove(payload):
+    if(payload.message_id == DEPARTMENT_MESSAGE):
+        emoji = payload.emoji.name
+        user_id = payload.user_id
+        member = guild.get_member(user_id)
+        for i in DEPARTMENTS:
+            if(i[0] == emoji):
+                role = discord.utils.get(guild.roles, name=i[1])
+                if(role in member.roles):
+                    await member.remove_roles(role)
+                    return await logs.print(f"{member.mention} removed from {role}")
+                return print(f"{member} not assigned {role}")
+        return print("other emoji")
+
+@bot.event
 async def on_message(message):
     if("@here" in message.content):
         core_role = discord.utils.get(guild.roles, name="Core Team") 
@@ -94,6 +109,8 @@ async def on_message(message):
 '''
 @bot.command()
 async def startup(ctx):
+    if(ctx.message.author.id != AUTHOR):
+        return
     start_txt = 'Join the channels by reacting with emoji of respective department'
     for i in DEPARTMENTS:
         start_txt = start_txt + "\n" + i[0] + " " + i[1]
