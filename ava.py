@@ -11,6 +11,7 @@ load_dotenv()
 server = os.getenv("SERVER")
 TOKEN = os.getenv('DISCORD_TOKEN')
 DEPARTMENT_MESSAGE = int(os.getenv("DEPARTMENT_MESSAGE"))
+EMAIL_MESSAGE = int(os.getenv("EMAIL_MESSAGE"))
 DEPARTMENT_CHANNEL = int(os.getenv("DEPARTMENT_CHANNEL"))
 LOG_CHANNEL = int(os.getenv("LOG_CHANNEL"))
 DEBUG = (os.getenv("DEBUG","") != "False" )
@@ -70,18 +71,27 @@ async def id(ctx):
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    if(payload.message_id != DEPARTMENT_MESSAGE):
-        return
-    emoji = payload.emoji.name
-    member = payload.member
-    for i in DEPARTMENTS:
-        if(i[0] == emoji):
-            role = discord.utils.get(guild.roles, name=i[1])
+    if(payload.message_id == DEPARTMENT_MESSAGE):
+        emoji = payload.emoji.name
+        member = payload.member
+        for i in DEPARTMENTS:
+            if(i[0] == emoji):
+                role = discord.utils.get(guild.roles, name=i[1])
+                if(role in member.roles):
+                    return print(f"{payload.member} already assigned {role}")
+                await member.add_roles(role)
+                return await logs.print(f"added {payload.member.mention} to {role}")
+        print("other emoji")
+    elif(payload.message_id == EMAIL_MESSAGE):
+        emoji = payload.emoji.name
+        member = payload.member
+        correct = '✅'
+        if(emoji == correct):
+            role = discord.utils.get(guild.roles, name= "Receive Emails")
             if(role in member.roles):
-                return print(f"{payload.member} already assigned {role}")
+                return print(f"{payload.member} already subscribed to Emails")
             await member.add_roles(role)
             return await logs.print(f"added {payload.member.mention} to {role}")
-    print("other emoji")
 
 @bot.event
 async def on_raw_reaction_remove(payload):
@@ -97,6 +107,20 @@ async def on_raw_reaction_remove(payload):
                     return await logs.print(f"{member.mention} removed from {role}")
                 return print(f"{member} not assigned {role}")
         return print("other emoji")
+    elif(payload.message_id == EMAIL_MESSAGE):
+        emoji = payload.emoji.name
+        user_id = payload.user_id
+        member = guild.get_member(user_id)
+        correct = '✅'
+        if(emoji == correct):
+            role = discord.utils.get(guild.roles, name= "Receive Emails")
+            if(role in member.roles):
+                await member.remove_roles(role)
+                return await logs.print(f"{member.mention} removed from {role}")
+            return print(f"{payload.member} already unsubscribed to Emails")
+        return print("other emoji")
+            
+            
 
 @bot.event
 async def on_message(message):
@@ -119,7 +143,13 @@ async def startup(ctx):
     for i in DEPARTMENTS:
         emoji = i[0]
         await msg.add_reaction(emoji)
+    correct = '✅'
+    desc = f"All messages triggered by Core team will be forwarded to your organization Email. You can Subscribe by reacting {correct} and unsubscribe by removing same reaction"
+    em = discord.Embed(title="Subscribe for emails", description=desc)
+    msg = await ctx.send(embed=em)
+    await msg.add_reaction(correct)
 '''
+
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
