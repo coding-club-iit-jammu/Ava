@@ -33,6 +33,7 @@ bot = commands.Bot(
 
 bot.load_extension('script.verify')
 bot.load_extension('script.info')
+bot.load_extension('script.ratings')
 
 @bot.event
 async def on_ready():
@@ -124,10 +125,17 @@ async def on_raw_reaction_remove(payload):
 
 @bot.event
 async def on_message(message):
-    if("@here" in message.content):
-        core_role = discord.utils.get(guild.roles, name="Core Team") 
-        if(core_role in message.author.roles):
-            await notify.send(message)
+    if message.author.bot:
+        return
+    if isinstance(message.channel, discord.channel.TextChannel):    #ONLY GUILD messages
+        if("@here" in message.content):
+            core_role = discord.utils.get(guild.roles, name="Core Team") 
+            if(core_role in message.author.roles):
+                await notify.send(message)
+        #increase XP
+        Rating_cog = bot.get_cog("Ratings")
+        await Rating_cog.increaseXP(message)
+
     await bot.process_commands(message)
 
 '''

@@ -3,9 +3,7 @@ import time
 import re
 import discord
 from discord.ext import commands
-
 from pymongo import MongoClient
-
 from .log import log_emit
 
 uri = os.getenv('MONGODB')
@@ -58,7 +56,7 @@ class Infos(commands.Cog):
             userid = member
             con = True
         if(con):
-            users = db.member.find({"discordid" : userid})
+            users = db.member.find({"discordid" : userid},{"name" : 1, "entry" : 1, "discordid" : 1, "username" : 1})
             users_len = 0
             out = ""
             for user in users:
@@ -72,7 +70,7 @@ class Infos(commands.Cog):
                 dev_role = discord.utils.get(guild.roles, name="Core Team") 
                 await logs.print(f"{dev_role.mention} Error occured in searching userid {userid}. If you seeing this plz report this to ADMIN ASAP.")  
         else:
-            all_users = db.member.find()
+            all_users = db.member.find({}, {"name" : 1, "entry" : 1, "discordid" : 1, "username" : 1})
             users = []
             for user in all_users:
                 if(match(member, user['name']) or match(member, user['username'])):

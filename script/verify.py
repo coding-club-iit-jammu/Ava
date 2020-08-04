@@ -77,11 +77,17 @@ class Verify(commands.Cog):
             role = discord.utils.get(guild.roles, name="Verified")
             member = guild.get_member(ctx.author.id)
             user = {
-                'name' : name,
-                'entry' : entry_number,
-                'discordid' : str(ctx.author.id),
-                'username' : ctx.author.name +'#'+ctx.author.discriminator,
-                'timestamp' : time.time()
+                '$set' : {
+                    'name' : name,
+                    'entry' : entry_number,
+                    'discordid' : str(ctx.author.id),
+                    'username' : ctx.author.name +'#'+ctx.author.discriminator,
+                    'last_message' : time.time()
+                },
+                '$setOnInsert' : {
+                    'rating' : 10,
+                    'timestamp' : time.time(),
+                }
             }
             key_dat = {'discordid' : str(ctx.author.id)}
             exist = db.member.update(key_dat, user, upsert=True)
