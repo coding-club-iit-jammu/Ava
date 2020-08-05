@@ -32,7 +32,7 @@ class Ratings(commands.Cog):
         if(user is None):
             return
         if(time.time() - user['last_message'] >= 30):
-            new_rating = user['rating'] + random.randint(5,10)
+            new_rating = user['rating'] + random.randint(8,10)
             prev_lvl = user['rating']//100 + 1
             new_lvl = new_rating//100 + 1
             new_user = {

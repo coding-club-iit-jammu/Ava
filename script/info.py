@@ -102,7 +102,10 @@ class Infos(commands.Cog):
             user_dic[user['discordid']] = (user['name'], user['entry'])
         out = f"Total {len(all_members)} members found\n\n"
         for member in all_members:
-            detail = user_dic[str(member.id)]
+            try:
+                detail = user_dic[str(member.id)]
+            except:
+                continue
             name = detail[0][:15]
             entry = detail[1]
             between = " " * (15 - len(name))

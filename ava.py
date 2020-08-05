@@ -138,7 +138,7 @@ async def on_message(message):
         await Rating_cog.increaseXP(message)
     await bot.process_commands(message)
 
-
+'''
 @bot.command()
 async def startup(ctx):
     if(ctx.message.author.id != AUTHOR):
@@ -156,7 +156,7 @@ async def startup(ctx):
     em = discord.Embed(title="Subscribe for emails", description=desc)
     msg = await ctx.send(embed=em)
     await msg.add_reaction(correct)
-
+'''
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
