@@ -31,7 +31,7 @@ bot = commands.Bot(
         case_insensitive=True    
     )
 
-#bot.load_extension('script.verify')
+bot.load_extension('script.verify')
 bot.load_extension('script.info')
 bot.load_extension('script.ratings')
 
