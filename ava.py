@@ -26,12 +26,12 @@ DEPARTMENTS = [
 
 #client = discord.Client()
 bot = commands.Bot(
-        command_prefix='!',
+        command_prefix='.',
         description='Coding Club IIT Jammu Discord BOT',
         case_insensitive=True    
     )
 
-bot.load_extension('script.verify')
+#bot.load_extension('script.verify')
 bot.load_extension('script.info')
 bot.load_extension('script.ratings')
 
@@ -52,7 +52,7 @@ async def on_ready():
 async def on_member_join(member):
     await member.create_dm()
     await member.dm_channel.send(
-        f'Hi {member.name}, welcome to Coding Club IIT Jammu Discord server. Pls Verify using !verify command followed by Name in quotes and entry number'
+        f'Hi {member.name}, welcome to Coding Club IIT Jammu Discord server. Pls Verify using .verify command followed by Name in quotes and entry number'
     )
     await logs.print(f'{member.mention} joined Server!')
 
@@ -67,6 +67,7 @@ async def leave(ctx):
     await bot.close()
 
 @bot.command()
+@commands.cooldown(1, 15, commands.BucketType.user)
 async def id(ctx):
     await ctx.send(f"{ctx.author.id}")
 
@@ -135,10 +136,9 @@ async def on_message(message):
         #increase XP
         Rating_cog = bot.get_cog("Ratings")
         await Rating_cog.increaseXP(message)
-
     await bot.process_commands(message)
 
-'''
+
 @bot.command()
 async def startup(ctx):
     if(ctx.message.author.id != AUTHOR):
@@ -156,18 +156,19 @@ async def startup(ctx):
     em = discord.Embed(title="Subscribe for emails", description=desc)
     msg = await ctx.send(embed=em)
     await msg.add_reaction(correct)
-'''
 
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         msg = 'This command is ratelimited, please try again in {:.2f}s'.format(error.retry_after)
         await ctx.send(msg)
-    if isinstance(error, CommandNotFound):
+    elif isinstance(error, CommandNotFound):
         user_m = '{0.author.mention} '.format(ctx)
         msg_s = "Invalid Command"
         msg_s = user_m + msg_s
         await ctx.send(msg_s)
+    elif isinstance(error, commands.errors.MissingRole ):
+        await ctx.send("Don`t have permission")
     else:
         raise error
 bot.run(TOKEN)

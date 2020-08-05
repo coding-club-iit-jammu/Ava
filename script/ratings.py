@@ -47,8 +47,11 @@ class Ratings(commands.Cog):
             db.member.update(key_dat, new_user)
 
     @commands.command()
+    @commands.has_role('Verified')
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def rating(self, ctx,member : str = ""):
+        if (isinstance(ctx.channel, discord.channel.TextChannel) == False):
+            return await ctx.send("You can`t use commands other than '.verify' in private messages 🛑")
         if(re.search("^<@!.*>$", member)):
             userid = member[3:-1]
         elif(re.search("^<@.*>$", member)):
@@ -70,7 +73,42 @@ class Ratings(commands.Cog):
         
         em = discord.Embed(title="Ratings Stats", description=stats)
         em.set_thumbnail(url=user_obj.avatar_url)
-        em.set_footer(text='Requested by: ' + ctx.author.name)
+        em.set_footer(text=f'Requested by: {ctx.author.name}\t\tResponse Time : {round(self.bot.latency, 3)}s')
+        await ctx.send(embed = em)
+
+    @commands.command()
+    @commands.has_role('Verified')
+    @commands.cooldown(1, 30, commands.BucketType.channel)
+    async def ranklist(self, ctx, upto : int = 5):
+        if (isinstance(ctx.channel, discord.channel.TextChannel) == False):
+            return await ctx.send("You can`t use commands other than '.verify' in private messages 🛑")
+        core_role = discord.utils.get(guild.roles, name="Core Team")  
+        user_roles = ctx.author.roles
+        if(core_role not in user_roles):
+            upto = 5
+        users = db.member.find({},{"name" : 1, "rating" : 1, "entry" : 1})
+        all_member = []
+        for user in users:
+            tem = (user['entry'], user['name'], user['rating'])
+            all_member.append(tem)
+        all_member.sort(key = lambda x : x[2], reverse=True)
+        
+        em = discord.Embed(title="XP Ranklist", colour = discord.Colour(16737945))
+        names = ""
+        entry_all = ""
+        ratings = "" 
+        times = 0
+        for i in all_member:
+            names = names +  i[1][:18] + "\t\n"
+            entry_all = entry_all + i[0] + "\t\n"
+            ratings = ratings + str(i[2]) + "\n"
+            times += 1
+            if(times >= upto):
+                break
+        em.add_field(name='Name', value=names, inline=True)
+        em.add_field(name='Username', value=entry_all, inline=True)
+        em.add_field(name='Ratings', value=ratings, inline=True)
+        em.set_footer(text=f'Requested by: {ctx.author.name}\t\tResponse Time : {round(self.bot.latency, 3)}s')
         await ctx.send(embed = em)
         
 def setup(bot):

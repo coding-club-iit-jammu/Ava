@@ -38,7 +38,8 @@ class Infos(commands.Cog):
         logs = log_emit(LOG_CHANNEL, self.bot, DEBUG)
 
     @commands.command()
-    @commands.cooldown(1, 15, commands.BucketType.channel)
+    @commands.has_role('Verified')
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def info(self, ctx,member : str):
         if(len(member) < 3):
             return await ctx.send(f"{ctx.author.mention} Pls enter minimum of 3 charaters")
@@ -86,6 +87,8 @@ class Infos(commands.Cog):
             await ctx.send(out)
 
     @commands.command()
+    @commands.has_role('Verified')
+    @commands.cooldown(1, 15, commands.BucketType.channel)
     async def members(self, ctx,role : str):
         try:
             roleid = role[3:-1]

@@ -3,7 +3,7 @@ import time
 import discord
 from discord.ext import commands
 from random import randint
-
+import string
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
@@ -25,6 +25,14 @@ def random_with_N_digits(n):
     range_end = (10**n)-1
     return randint(range_start, range_end)
 
+def check_entry_number(enum):
+    year = enum[0:4]
+    branch = enum[4:7]
+    en = enum[7:]
+    if(year.isdigit() and branch.isalpha() and en.isdigit()):
+        return True
+    return False
+
 class Verify(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -43,10 +51,12 @@ class Verify(commands.Cog):
         if(ctx.guild is not None):
             return await ctx.send(f'Please DM for Verification')
         if(name == "" or entry_number ==""):
-            help_msg = 'Please use !verify command in correct format.\nFor eg.\n!verify "Abhishek Chaudhary" 2018ucs0087'
+            help_msg = 'Please use .verify command in correct format.\nFor eg.\n.verify "Abhishek Chaudhary" 2018ucs0087'
             return await ctx.send(f'{help_msg}')
         timeout = 3
         entry_number = entry_number.upper()
+        if(check_entry_number(entry_number) == False):
+            return await ctx.send("Invalid Entry Number")
         email = entry_number + "@iitjammu.ac.in"
         verf_msg = f"An email with Verification Code has been sent to {email}. Enter your code here within {timeout} minutes."
         code = random_with_N_digits(6)
@@ -55,7 +65,7 @@ class Verify(commands.Cog):
         await logs.print(f'{ctx.author.mention} started Verification')
 
         message = Mail(
-            from_email='Ava-noreply@iamabhishek.co',
+            from_email='Ava-noreply@'+os.getenv('EMAIL_DOMAIN'),
             to_emails=email,
             subject='Coding Club Discord Server',
             html_content= f'Thanks {entry_number} for creating account on Coding Club Discord Server,<br>Your Verification Code is : <b>{code}</b><br>This Code will Expire in 3 Minutes.<br><br>Sincerely,<br>Ava, BOT Coding Club'
@@ -70,8 +80,12 @@ class Verify(commands.Cog):
         except Exception as e:
             print(e.message)
         await ctx.send(f'Name : {name}\nEntry Number : {entry_number}\n{verf_msg}')
-        code_got = await self.bot.wait_for('message', check=lambda message: message.author == ctx.author, timeout = 180)
-        if(code_got.content[0] == "!"):
+        try:
+            code_got = await self.bot.wait_for('message', check=lambda message: message.author == ctx.author, timeout = 180)
+        except asyncio.TimeoutError:
+            await ctx.send(f"{ctx.author} Verification Time Out")
+            return await logs.print(f'{ctx.author.mention} verification Timeout')
+        if(code_got.content[0] == "."):
             return
         if(code_got.content == str(code)):
             role = discord.utils.get(guild.roles, name="Verified")
