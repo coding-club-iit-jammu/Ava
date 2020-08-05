@@ -134,8 +134,11 @@ async def on_message(message):
             if(core_role in message.author.roles):
                 await notify.send(message)
         #increase XP
-        Rating_cog = bot.get_cog("Ratings")
-        await Rating_cog.increaseXP(message)
+        if(message.channel. category_id == int(os.getenv("CORE_CAT"))):
+            print("yes")
+        else:
+            Rating_cog = bot.get_cog("Ratings")
+            await Rating_cog.increaseXP(message)
     await bot.process_commands(message)
 
 '''

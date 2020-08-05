@@ -94,20 +94,36 @@ class Ratings(commands.Cog):
         all_member.sort(key = lambda x : x[2], reverse=True)
         
         em = discord.Embed(title="XP Ranklist", colour = discord.Colour(16737945))
+        '''
         names = ""
         entry_all = ""
         ratings = "" 
         times = 0
         for i in all_member:
-            names = names +  i[1][:18] + "\t\n"
-            entry_all = entry_all + i[0] + "\t\n"
+            names = names +  i[1][:15] + "\n"
+            #entry_all = entry_all + i[0] + "\n"
             ratings = ratings + str(i[2]) + "\n"
             times += 1
             if(times >= upto):
                 break
         em.add_field(name='Name', value=names, inline=True)
-        em.add_field(name='Username', value=entry_all, inline=True)
+        #em.add_field(name='Username', value=entry_all, inline=True)
         em.add_field(name='Ratings', value=ratings, inline=True)
+        '''
+        name_len = 28
+        header = "Name" 
+        header_final = header + (" "*(name_len - len(header))  ) + "Rating"
+        values = ""
+        times = 0
+        for i in all_member:
+            iname = i[1][:15] + f" ({i[0][:4]})"
+            tem = iname + (" "*(name_len - len(iname))  ) + str(i[2])
+            values = values + tem + "\n"
+            times += 1
+            if(times >= upto):
+                break
+        values = "```" + values + "```"
+        em.add_field(name=header_final, value=values)
         em.set_footer(text=f'Requested by: {ctx.author.name}\t\tResponse Time : {round(self.bot.latency, 3)}s')
         await ctx.send(embed = em)
         
