@@ -2,7 +2,6 @@ import os
 import time
 import re
 import discord
-import random
 from discord.ext import commands
 from pymongo import MongoClient
 from .log import log_emit
@@ -26,13 +25,13 @@ class Ratings(commands.Cog):
         guild = self.bot.get_guild(int(server))
         logs = log_emit(LOG_CHANNEL, self.bot, DEBUG)
 
-    async def increaseXP(self, message):
+    async def increaseXP(self, message, addXP):
         userid = str(message.author.id)
         user = db.member.find_one({"discordid" : userid},{"rating" : 1, "last_message" : 1, "rating" : 1})
         if(user is None):
             return
         if(time.time() - user['last_message'] >= 30):
-            new_rating = user['rating'] + random.randint(8,10)
+            new_rating = user['rating'] + addXP
             prev_lvl = user['rating']//100 + 1
             new_lvl = new_rating//100 + 1
             new_user = {

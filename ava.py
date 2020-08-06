@@ -1,5 +1,6 @@
 import os, asyncio
 import discord
+import random
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord.ext.commands import CommandNotFound
@@ -23,6 +24,14 @@ DEPARTMENTS = [
     ('👨‍💻', 'AI'),
     ('🕵️', 'Security')
 ]
+
+def match(a, b):
+    l = min(len(a), len(b))
+    a1 = a[:l].lower()
+    b1 = b[:l].lower()
+    if(a1 == b1):
+        return True
+    return False
 
 #client = discord.Client()
 bot = commands.Bot(
@@ -134,11 +143,14 @@ async def on_message(message):
             if(core_role in message.author.roles):
                 await notify.send(message)
         #increase XP
-        if(message.channel. category_id == int(os.getenv("CORE_CAT"))):
-            print("yes")
-        else:
-            Rating_cog = bot.get_cog("Ratings")
-            await Rating_cog.increaseXP(message)
+        if(message.channel. category_id != int(os.getenv("CORE_CAT"))):
+            msg_got = message.content
+            if((match(msg_got, ".rating") or match(msg_got, ".ranklist")) == 0):
+                incXP = random.randint(8,10)
+                if(msg_got[0] == "."):
+                    incXP = 2
+                Rating_cog = bot.get_cog("Ratings")
+                await Rating_cog.increaseXP(message, incXP)
     await bot.process_commands(message)
 
 '''
