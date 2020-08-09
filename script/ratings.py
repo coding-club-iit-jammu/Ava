@@ -8,7 +8,7 @@ from .log import log_emit
 
 uri = os.getenv('MONGODB')
 mongodb = MongoClient(uri)
-db = mongodb.CodingClub
+db = mongodb[os.getenv("DOCUMENT")]
 
 
 server = int(os.getenv("SERVER"))

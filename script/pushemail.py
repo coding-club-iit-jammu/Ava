@@ -18,7 +18,7 @@ class sendemails:
 
         uri = os.getenv('MONGODB')
         mongodb = MongoClient(uri)
-        self.db = mongodb.CodingClub
+        self.db = mongodb[os.getenv("DOCUMENT")]
 
     async def send(self, message):
         em = discord.Embed(title="Send Email", description='Are you sure to send mail to everyone in this channel')
@@ -50,7 +50,7 @@ class sendemails:
                 emb = discord.Embed(title="Email Sent", description = 'Above message emailed to all members in following channel successfully')
                 emb.set_footer(text='Email requested by: ' + message.author.name)
                 email_message = Mail(
-                    from_email='Ava-noreply@iamabhishek.co',
+                    from_email=f"Ava-noreply@{os.getenv('EMAIL_DOMAIN')}",
                     to_emails=email_list,
                     subject=email_Subject,
                     html_content= f'{message.content}<br>-{message.author.name}<br><br>Sincerely,<br>Ava, BOT Coding Club'
