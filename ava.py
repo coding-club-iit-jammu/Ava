@@ -147,7 +147,7 @@ async def on_message(message):
             msg_got = message.content
             if((match(msg_got, ".rating") or match(msg_got, ".ranklist")) == 0):
                 incXP = random.randint(8,10)
-                if(msg_got[0] == "."):
+                if(msg_got[0] in [".", "-", "!" ]):
                     incXP = 2
                 Rating_cog = bot.get_cog("Ratings")
                 await Rating_cog.increaseXP(message, incXP)
