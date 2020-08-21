@@ -115,8 +115,8 @@ class Infos(commands.Cog):
         return await ctx.send(out)
     
     @commands.command()
-    @commands.has_role('Verified')
-    @commands.cooldown(1, 15, commands.BucketType.channel)
+    @commands.has_role('Core Team')
+    @commands.cooldown(1, 60, commands.BucketType.channel)
     async def update(self, ctx):
         _role = discord.utils.get(guild.roles, name="Verified")
         all_members = _role.members
