@@ -44,8 +44,12 @@ class sendemails:
                 email_role = discord.utils.get(self.guild.roles, name="Receive Emails") 
                 for eachmember in channel_members:
                     if(email_role in eachmember.roles):
-                        person_id = user_dict[str(eachmember.id)] + "@iitjammu.ac.in"
+                        try:
+                            person_id = user_dict[str(eachmember.id)] + "@iitjammu.ac.in"
+                        except:
+                            continue
                         email_list.append(person_id)
+                        
                 email_Subject = message.channel.name
                 emb = discord.Embed(title="Email Sent", description = 'Above message emailed to all members in following channel successfully')
                 emb.set_footer(text='Email requested by: ' + message.author.name)
