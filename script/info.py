@@ -137,7 +137,7 @@ class Infos(commands.Cog):
                 'name' : name,
                 'discord-id' : str(member.id),
                 'username' : member.name +'#'+member.discriminator,
-                'img' : member.avatar_url 
+                'img' : str(member.avatar_url) 
             }
         apidb.current.delete_many({})
         for i in final_mem:

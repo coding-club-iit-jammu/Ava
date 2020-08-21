@@ -113,7 +113,7 @@ class Verify(commands.Cog):
                     'entry' : entry_number,
                     'discord-id' : str(ctx.author.id),
                     'username' : ctx.author.name +'#'+ctx.author.discriminator,
-                    'img' : ctx.author.avatar_url
+                    'img' : str(ctx.author.avatar_url)
                 }
             }
             key_dat = {'entry' : entry_number}

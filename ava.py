@@ -189,4 +189,11 @@ async def on_command_error(ctx, error):
         await ctx.send("Don`t have permission")
     else:
         raise error
+
+@bot.command()
+async def avatar(ctx, avamember : discord.Member=None):
+    userAvatarUrl = avamember.avatar_url
+    print(userAvatarUrl)
+    await ctx.send(userAvatarUrl)
+
 bot.run(TOKEN)
