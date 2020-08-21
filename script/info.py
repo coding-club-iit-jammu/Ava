@@ -131,7 +131,7 @@ class Infos(commands.Cog):
                 detail = user_dic[str(member.id)]
             except:
                 continue
-            name = detail[0][:15]
+            name = detail[0]
             entry = detail[1]
             final_mem[entry] = {
                 'name' : name,
