@@ -82,6 +82,7 @@ async def id(ctx):
 
 @bot.event
 async def on_raw_reaction_add(payload):
+    await Rating_cog.increaseXP(message, 1)
     if(payload.message_id == DEPARTMENT_MESSAGE):
         emoji = payload.emoji.name
         member = payload.member
@@ -106,6 +107,8 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_raw_reaction_remove(payload):
+    Rating_cog = bot.get_cog("Ratings")
+    await Rating_cog.increaseXP(message, -1)
     if(payload.message_id == DEPARTMENT_MESSAGE):
         emoji = payload.emoji.name
         user_id = payload.user_id

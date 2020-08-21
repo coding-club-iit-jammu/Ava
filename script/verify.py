@@ -15,7 +15,7 @@ from .log import log_emit
 uri = os.getenv('MONGODB')
 mongodb = MongoClient(uri)
 db = mongodb[os.getenv("DOCUMENT")]
-
+apidb = mongodb["API"] 
 
 server = int(os.getenv("SERVER"))
 LOG_CHANNEL = int(os.getenv("LOG_CHANNEL"))
@@ -104,8 +104,19 @@ class Verify(commands.Cog):
                     'timestamp' : time.time(),
                 }
             }
+
             key_dat = {'discordid' : str(ctx.author.id)}
             exist = db.member.update(key_dat, user, upsert=True)
+            user = {
+                '$set' : {
+                    'name' : name,
+                    'entry' : entry_number,
+                    'discord-id' : str(ctx.author.id),
+                    'username' : ctx.author.name +'#'+ctx.author.discriminator
+                }
+            }
+            key_dat = {'entry' : entry_number}
+            exist = apidb.current.update(key_dat, user, upsert=True)
             await member.add_roles(role)
             await ctx.send(f"verified {ctx.author}")
             await logs.print(f'{ctx.author.mention} verified')

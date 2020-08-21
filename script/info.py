@@ -9,7 +9,7 @@ from .log import log_emit
 uri = os.getenv('MONGODB')
 mongodb = MongoClient(uri)
 db = mongodb[os.getenv("DOCUMENT")]
-
+apidb = mongodb["API"] 
 
 server = int(os.getenv("SERVER"))
 LOG_CHANNEL = int(os.getenv("LOG_CHANNEL"))
@@ -113,6 +113,38 @@ class Infos(commands.Cog):
             out = out + tem + "\n"
         out = "```" + out + "```"
         return await ctx.send(out)
+    
+    @commands.command()
+    @commands.has_role('Verified')
+    @commands.cooldown(1, 15, commands.BucketType.channel)
+    async def update(self, ctx):
+        _role = discord.utils.get(guild.roles, name="Verified")
+        all_members = _role.members
+        all_users = db.member.find({}, {"name" : 1, "entry" : 1, "discordid" : 1})
+        user_dic = {}
+        for user in all_users:
+            user_dic[user['discordid']] = (user['name'], user['entry'])
+        final_mem = {} 
+        insert_mem = []   
+        for member in all_members:
+            try:
+                detail = user_dic[str(member.id)]
+            except:
+                continue
+            name = detail[0][:15]
+            entry = detail[1]
+            final_mem[entry] = {
+                'name' : name,
+                'discord-id' : str(member.id),
+                'username' : member.name +'#'+member.discriminator 
+            }
+        apidb.current.delete_many({})
+        for i in final_mem:
+            tem = final_mem[i]
+            tem['entry'] = i
+            insert_mem.append(tem)
+        apidb.current.insert_many(insert_mem)
+        return await ctx.send("Database forcefully Updated")
 
 
 def setup(bot):
