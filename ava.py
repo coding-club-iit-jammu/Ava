@@ -82,7 +82,6 @@ async def id(ctx):
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    await Rating_cog.increaseXP(message, 1)
     if(payload.message_id == DEPARTMENT_MESSAGE):
         emoji = payload.emoji.name
         member = payload.member
@@ -107,8 +106,6 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_raw_reaction_remove(payload):
-    Rating_cog = bot.get_cog("Ratings")
-    await Rating_cog.increaseXP(message, -1)
     if(payload.message_id == DEPARTMENT_MESSAGE):
         emoji = payload.emoji.name
         user_id = payload.user_id
@@ -146,7 +143,7 @@ async def on_message(message):
             if(core_role in message.author.roles):
                 await notify.send(message)
         #increase XP
-        if(message.channel. category_id != int(os.getenv("CORE_CAT"))):
+        if(message.channel.category_id != int(os.getenv("CORE_CAT"))):
             msg_got = message.content
             if((match(msg_got, ".rating") or match(msg_got, ".ranklist")) == 0):
                 incXP = random.randint(8,10)
@@ -191,6 +188,7 @@ async def on_command_error(ctx, error):
         raise error
 
 @bot.command()
+@commands.has_role('Verified')
 async def avatar(ctx, avamember : discord.Member=None):
     userAvatarUrl = avamember.avatar_url
     print(userAvatarUrl)
