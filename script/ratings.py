@@ -24,26 +24,60 @@ class Ratings(commands.Cog):
         global logs, guild
         guild = self.bot.get_guild(int(server))
         logs = log_emit(LOG_CHANNEL, self.bot, DEBUG)
-
-    async def increaseXP(self, message, addXP):
-        userid = str(message.author.id)
+    
+    async def increaseXP(self, userid, addXP, timelimit = True):
+        userid = str(userid)
         user = db.member.find_one({"discordid" : userid},{"rating" : 1, "last_message" : 1, "rating" : 1})
         if(user is None):
             return
-        if(time.time() - user['last_message'] >= 30):
+        if(timelimit == False or (time.time() - user['last_message'] >= 60) ):
             new_rating = user['rating'] + addXP
             prev_lvl = user['rating']//100 + 1
             new_lvl = new_rating//100 + 1
-            new_user = {
-                '$set' : {
-                    'last_message' : time.time(),
-                    'rating' : new_rating
+            if(timelimit):
+                new_user = {
+                    '$set' : {
+                        'last_message' : time.time(),
+                        'rating' : new_rating
+                    }
                 }
-            }
+            else:
+                new_user = {
+                    '$set' : {
+                        'rating' : new_rating
+                    }
+                }
             if(new_lvl > prev_lvl):
-                await message.channel.send(f"Congratulations {message.author.mention} for just advancing to level {new_lvl}")
+                lvl_channel = self.bot.get_channel(int(os.getenv('LEVEL_CHANNEL')))
+                author = self.bot.get_user(int(userid))
+                await lvl_channel.send(f"Congratulations {author.mention} for just advancing to level {new_lvl}")
             key_dat = {"discordid" : userid}
             db.member.update(key_dat, new_user)
+
+    @commands.command()
+    @commands.has_role('Core Team')   
+    async def changeXP(self,ctx, member, addXP:int):
+        if(len(member) < 3):
+            return await ctx.send(f"{ctx.author.mention} Pls enter minimum of 3 charaters")
+        con = False
+        if(re.search("^<@!.*>$", member)):
+            userid = member[3:-1]
+            con = True
+        elif(re.search("^<@.*>$", member)):
+            if(member[2] == '&'):
+                return await ctx.send(f"{ctx.author.mention} Invalid Mention")
+            userid = member[2:-1]
+            con = True
+        if(con == False):
+            return await ctx.send(f"{ctx.author.mention} Invalid Mention")
+        author = self.bot.get_user(int(userid))
+        if(addXP < 0):
+            stat = "decreased"
+        else:
+            stat = "increased"
+        await ctx.send(f"{ctx.author.mention} forcefully {stat} {author.mention}`s XP by {max(addXP,addXP*-1)}")
+        await self.increaseXP(userid, addXP, False)
+
 
     @commands.command()
     @commands.has_role('Verified')

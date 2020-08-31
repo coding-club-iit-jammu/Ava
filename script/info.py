@@ -101,6 +101,7 @@ class Infos(commands.Cog):
         for user in all_users:
             user_dic[user['discordid']] = (user['name'], user['entry'])
         out = f"Total {len(all_members)} members found\n\n"
+        out_arr = []
         for member in all_members:
             try:
                 detail = user_dic[str(member.id)]
@@ -111,8 +112,13 @@ class Infos(commands.Cog):
             between = " " * (15 - len(name))
             tem = f"{name}{between}\t{entry}"
             out = out + tem + "\n"
-        out = "```" + out + "```"
-        return await ctx.send(out)
+            if(len(out) > 1800):
+                out_arr.append(out)
+                out = ""
+        if(len(out) > 0):
+            out_arr.append(out)
+        for i in out_arr:
+            await ctx.send(f'```{i}```')
     
     @commands.command()
     @commands.has_role('Core Team')

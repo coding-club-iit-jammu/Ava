@@ -82,6 +82,8 @@ async def id(ctx):
 
 @bot.event
 async def on_raw_reaction_add(payload):
+    Rating_cog = bot.get_cog("Ratings")
+    await Rating_cog.increaseXP(payload.user_id, 1, False)
     if(payload.message_id == DEPARTMENT_MESSAGE):
         emoji = payload.emoji.name
         member = payload.member
@@ -106,6 +108,8 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_raw_reaction_remove(payload):
+    Rating_cog = bot.get_cog("Ratings")
+    await Rating_cog.increaseXP(payload.user_id, -1, False)
     if(payload.message_id == DEPARTMENT_MESSAGE):
         emoji = payload.emoji.name
         user_id = payload.user_id
@@ -146,11 +150,11 @@ async def on_message(message):
         if(message.channel.category_id != int(os.getenv("CORE_CAT"))):
             msg_got = message.content
             if((match(msg_got, ".rating") or match(msg_got, ".ranklist")) == 0):
-                incXP = random.randint(8,10)
+                incXP = random.randint(3,5)
                 if(msg_got[0] in [".", "-", "!" ]):
-                    incXP = 2
+                    incXP = 1
                 Rating_cog = bot.get_cog("Ratings")
-                await Rating_cog.increaseXP(message, incXP)
+                await Rating_cog.increaseXP(message.author.id, incXP)
     await bot.process_commands(message)
 
 '''
