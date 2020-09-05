@@ -45,6 +45,19 @@ class Verify(commands.Cog):
         guild = self.bot.get_guild(int(server))
         logs = log_emit(LOG_CHANNEL, self.bot, DEBUG)
 
+    async def give_roles(self, member, entry_number):
+        if(int(entry_number[:4]) > 2016):
+            if(entry_number[4] == 'U'):
+                stu_type = discord.utils.get(guild.roles, name="UG")
+            else:
+                stu_type = discord.utils.get(guild.roles, name="PG")
+            stu_yr = discord.utils.get(guild.roles, name=entry_number[:4])
+            await member.add_roles(stu_type)
+            await member.add_roles(stu_yr)
+        elif(int(entry_number[:4]) <= 2016):
+            stu_type = discord.utils.get(guild.roles, name="Alumni")
+            await member.add_roles(stu_type)
+
     @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.channel)
     async def verify(self, ctx, name : str = "", entry_number : str = ""):
@@ -91,6 +104,7 @@ class Verify(commands.Cog):
         if(code_got.content[0] == "."):
             return
         if(code_got.content == str(code)):
+            await logs.print(f'{ctx.author.mention} verified')
             role = discord.utils.get(guild.roles, name="Verified")
             member = guild.get_member(ctx.author.id)
             user = {
@@ -121,12 +135,33 @@ class Verify(commands.Cog):
             key_dat = {'entry' : entry_number}
             exist = apidb.current.update(key_dat, user, upsert=True)
             await member.add_roles(role)
+            await self.give_roles(member, entry_number)
             await ctx.send(f"verified {ctx.author}")
-            await logs.print(f'{ctx.author.mention} verified')
+            await logs.print(f'{ctx.author.mention} Roles given')
         else:
             await ctx.send(f"not verified {ctx.author}")
             await logs.print(f'{ctx.author.mention} verification failed')
+    @commands.command()
+    @commands.has_role('Admin')
+    @commands.cooldown(1, 60, commands.BucketType.channel)
+    async def update_roles(self, ctx):
+        _role = discord.utils.get(guild.roles, name="Verified")
+        all_members = _role.members
+        all_users = db.member.find({}, {"entry" : 1, "discordid" : 1})
+        user_dic = {}
+        for user in all_users:
+            user_dic[user['discordid']] = user['entry']
+        for member in all_members:
+            mem_id = member.id
+            try:
+                mem_entry = user_dic[str(mem_id)]
+            except Exception as e:
+                print(e)
+                continue
+            else:
+                await self.give_roles(member, mem_entry)
 
+        await ctx.send("Roles Updated")
 
 def setup(bot):
     print("-----",server)   
