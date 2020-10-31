@@ -20,7 +20,7 @@ AUTHOR = 664161180121825301
 
 DEPARTMENTS = [
     ('🤖', 'Competitive Coding'),
-    ('🦸', 'Development'),
+    ('🛰', 'Development'),
     ('👨‍💻', 'AI'),
     ('🕵️', 'Security')
 ]
@@ -114,9 +114,9 @@ async def on_raw_reaction_remove(payload):
         emoji = payload.emoji.name
         user_id = payload.user_id
         member = guild.get_member(user_id)
-        for i in DEPARTMENTS:
-            if(i[0] == emoji):
-                role = discord.utils.get(guild.roles, name=i[1])
+        for k in DEPARTMENTS:
+            if(k[0] == emoji):
+                role = discord.utils.get(guild.roles, name=k[1])
                 if(role in member.roles):
                     await member.remove_roles(role)
                     return await logs.print(f"{member.mention} removed from {role}")
@@ -187,7 +187,7 @@ async def on_command_error(ctx, error):
         msg_s = user_m + msg_s
         await ctx.send(msg_s)
     elif isinstance(error, commands.errors.MissingRole ):
-        await ctx.send("Don`t have permission")
+        await ctx.send("Don't have permission")
     else:
         raise error
 
