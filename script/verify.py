@@ -70,7 +70,7 @@ class Verify(commands.Cog):
         if(name == "" or entry_number ==""):
             help_msg = 'Please use .verify command in correct format.\nFor eg.\n.verify "Abhishek Chaudhary" 2018ucs0087'
             return await ctx.send(f'{help_msg}')
-        await logs.print(f'{ctx.author.mention} tried to join')
+        await logs.print(f'{ctx.author.mention} tried to join having entry number {entry_number}')
         #return await ctx.send(f'We no longer accept Members Contact Core team')
         timeout = 3
         entry_number = entry_number.upper()
