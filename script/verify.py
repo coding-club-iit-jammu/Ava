@@ -46,16 +46,19 @@ class Verify(commands.Cog):
         logs = log_emit(LOG_CHANNEL, self.bot, DEBUG)
 
     async def give_roles(self, member, entry_number):
-        if(int(entry_number[:4]) > 2016):
-            if(entry_number[4] == 'U'):
-                stu_type = discord.utils.get(guild.roles, name="UG")
-            else:
-                stu_type = discord.utils.get(guild.roles, name="PG")
-            stu_yr = discord.utils.get(guild.roles, name=entry_number[:4])
-            await member.add_roles(stu_type)
-            await member.add_roles(stu_yr)
+        print(entry_number)
+        if((entry_number[4] == 'U' and int(entry_number[:4]) > 2016 ) or (entry_number[4] == 'P' and int(entry_number[:4]) >= 2019 ) or entry_number[4] == 'R'):
+            roles = entry_number[:5]+"G"
         elif(int(entry_number[:4]) <= 2016):
-            stu_type = discord.utils.get(guild.roles, name="Alumni")
+            roles = "Alumni"
+        print(roles)
+        try:
+            stu_type = discord.utils.get(guild.roles, name=roles)
+            await member.add_roles(stu_type)
+        except:
+            perms = discord.Permissions(send_messages=False, read_messages=True)
+            await guild.create_role(name=roles, permissions=perms, mentionable = True)
+            stu_type = discord.utils.get(guild.roles, name=roles)
             await member.add_roles(stu_type)
 
     @commands.command()
@@ -153,14 +156,15 @@ class Verify(commands.Cog):
             user_dic[user['discordid']] = user['entry']
         for member in all_members:
             mem_id = member.id
+            print(mem_id, '---')
             try:
                 mem_entry = user_dic[str(mem_id)]
+                print(mem_entry)
             except Exception as e:
                 print(e)
                 continue
             else:
                 await self.give_roles(member, mem_entry)
-
         await ctx.send("Roles Updated")
 
 def setup(bot):
