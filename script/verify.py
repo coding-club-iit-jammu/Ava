@@ -64,7 +64,7 @@ class Verify(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.channel)
     async def verify(self, ctx, name : str = "", entry_number : str = ""):
-        
+        name = name.strip()
         if(ctx.guild is not None):
             return await ctx.send(f'Please DM for Verification')
         if(name == "" or entry_number ==""):
