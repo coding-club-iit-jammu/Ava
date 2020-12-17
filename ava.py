@@ -53,7 +53,7 @@ async def on_ready():
     guild = bot.get_guild(int(server))
     role = discord.utils.get(guild.roles, name = 'Verified')
     await dep_channel.set_permissions(role, read_messages=True )
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="."))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=".help "))
     await logs.print(f'{bot.user.mention} has connected to Discord!')
     print("connected")
 
