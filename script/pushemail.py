@@ -6,6 +6,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Email
 from pymongo import MongoClient
 from .log import log_emit
+from discord_markdown.discord_markdown import convert_to_html
 
 class sendemails:
     def __init__(self, bot, DEBUG):
@@ -50,9 +51,10 @@ class sendemails:
                     user_dict[user['discordid']] = user['entry']
                 channel_members = message.channel.members
                 email_list = []
-                email_role = discord.utils.get(self.guild.roles, name="Receive Emails") 
+                email_role = discord.utils.get(self.guild.roles, name="Receive Emails")
+                alum_role = discord.utils.get(self.guild.roles, name="Alumni") 
                 for eachmember in channel_members:
-                    if(con_email or email_role in eachmember.roles):
+                    if((con_email or email_role in eachmember.roles) and (alum_role not in eachmember.roles)):
                         try:
                             person_id = user_dict[str(eachmember.id)] + "@iitjammu.ac.in"
                         except:
@@ -62,11 +64,12 @@ class sendemails:
                 msg_link = f'https://discordapp.com/channels/{self.guild.id}/{message.channel.id}/{message.id}'
                 emb = discord.Embed(title="Email Sent", description = 'Above message emailed to all members in following channel successfully')
                 emb.set_footer(text='Email requested by: ' + message.author.name)
+                msg_cont = convert_to_html(message.content)
                 email_message = Mail(
                     from_email=f"Ava-noreply@{os.getenv('EMAIL_DOMAIN')}",
                     to_emails=email_list,
                     subject=email_Subject,
-                    html_content= f'{message.content}<br>Link to message : {msg_link}<br>-{message.author.name}<br><br>Sincerely,<br>Ava, BOT Coding Club'
+                    html_content= f'{msg_cont} <br>-{message.author.name} <br><br>Link to message : {msg_link}  <br>Sincerely,<br>Ava, BOT Coding Club'
                     )
                 email_message.personalizations[0].add_cc(Email("codingclub@iitjammu.ac.in"))
                 if(self.DEBUG == False):
