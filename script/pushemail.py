@@ -59,12 +59,13 @@ class sendemails:
                             person_id = user_dict[str(eachmember.id)] + "@iitjammu.ac.in"
                         except:
                             continue
-                        email_list.append(person_id)     
+                        email_list.append(person_id)    
                 email_Subject = message.channel.name
                 msg_link = f'https://discordapp.com/channels/{self.guild.id}/{message.channel.id}/{message.id}'
                 emb = discord.Embed(title="Email Sent", description = 'Above message emailed to all members in following channel successfully')
                 emb.set_footer(text='Email requested by: ' + message.author.name)
                 msg_cont = convert_to_html(message.content)
+                email_list = list(set(email_list))
                 email_message = Mail(
                     from_email=f"Ava-noreply@{os.getenv('EMAIL_DOMAIN')}",
                     to_emails=email_list,
