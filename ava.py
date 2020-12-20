@@ -43,6 +43,7 @@ bot = commands.Bot(
 bot.load_extension('script.verify')
 bot.load_extension('script.info')
 bot.load_extension('script.ratings')
+bot.load_extension('script.admin')
 
 @bot.event
 async def on_ready():
