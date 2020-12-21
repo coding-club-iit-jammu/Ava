@@ -9,7 +9,6 @@ from .log import log_emit
 uri = os.getenv('MONGODB')
 mongodb = MongoClient(uri)
 db = mongodb[os.getenv("DOCUMENT")]
-apidb = mongodb["API"] 
 
 server = int(os.getenv("SERVER"))
 LOG_CHANNEL = int(os.getenv("LOG_CHANNEL"))
@@ -34,6 +33,7 @@ class Infos(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         global logs, guild
+        self.last_fetched = 0
         guild = self.bot.get_guild(int(server))
         logs = log_emit(LOG_CHANNEL, self.bot, DEBUG)
 
@@ -71,10 +71,19 @@ class Infos(commands.Cog):
                 dev_role = discord.utils.get(guild.roles, name="Core Team") 
                 await logs.print(f"{dev_role.mention} Error occured in searching userid {userid}. If you seeing this plz report this to ADMIN ASAP.")  
         else:
-            all_users = db.member.find({}, {"name" : 1, "entry" : 1, "discordid" : 1, "username" : 1})
+            if((int(time.time()) - self.last_fetched) > 300 ):
+                tem_users = db.member.find({}, {'_id':0, "name" : 1, "entry" : 1, "discordid" : 1, "username" : 1})
+                all_user = []
+                for i in tem_users:
+                    all_user.append(i)
+                self.all_list = all_user
+                self.last_fetched = int(time.time())
+                print("Refreshed")
+            else:
+                all_user = self.all_list
             users = []
-            for user in all_users:
-                if(match(member, user['name']) or match(member, user['username'])):
+            for user in all_user:
+                if(match(member, user['name']) or match(member, user['username']) or member.upper()==user['entry'].upper()):
                     users.append(user)
             out = ""
             for user in users:
@@ -120,40 +129,6 @@ class Infos(commands.Cog):
         for i in out_arr:
             await ctx.send(f'```{i}```')
     
-    @commands.command()
-    @commands.has_role('Core Team')
-    @commands.cooldown(1, 60, commands.BucketType.channel)
-    async def update(self, ctx):
-        _role = discord.utils.get(guild.roles, name="Verified")
-        all_members = _role.members
-        all_users = db.member.find({}, {"name" : 1, "entry" : 1, "discordid" : 1})
-        user_dic = {}
-        for user in all_users:
-            user_dic[user['discordid']] = (user['name'], user['entry'])
-        final_mem = {} 
-        insert_mem = []   
-        for member in all_members:
-            try:
-                detail = user_dic[str(member.id)]
-            except:
-                continue
-            name = detail[0]
-            entry = detail[1]
-            final_mem[entry] = {
-                'name' : name,
-                'discord-id' : str(member.id),
-                'username' : member.name +'#'+member.discriminator,
-                'img' : str(member.avatar_url) 
-            }
-        apidb.current.delete_many({})
-        for i in final_mem:
-            tem = final_mem[i]
-            tem['entry'] = i
-            insert_mem.append(tem)
-        apidb.current.insert_many(insert_mem)
-        return await ctx.send("Database forcefully Updated")
-
-
 def setup(bot):
     print("info command added")   
     bot.add_cog(Infos(bot))
