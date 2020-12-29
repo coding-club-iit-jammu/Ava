@@ -55,7 +55,7 @@ class Ratings(commands.Cog):
             db.member.update(key_dat, new_user)
 
     @commands.command()
-    @commands.has_role('Admin')   
+    @commands.has_role('everyone')   
     async def changeXP(self,ctx, member, addXP:int):
         if(len(member) < 3):
             return await ctx.send(f"{ctx.author.mention} Pls enter minimum of 3 charaters")
