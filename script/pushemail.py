@@ -66,11 +66,17 @@ class sendemails:
                 emb.set_footer(text='Email requested by: ' + message.author.name)
                 msg_cont = convert_to_html(message.content)
                 email_list = list(set(email_list))
+                
+                # Put guild-nickname if present else guild name
+                guild_name = message.author.nick
+                if(guild_name is None):
+                    guild_name = message.author.name
+
                 email_message = Mail(
                     from_email=f"Ava-noreply@{os.getenv('EMAIL_DOMAIN')}",
                     to_emails=email_list,
                     subject=email_Subject,
-                    html_content= f'{msg_cont} <br>-{message.author.name} <br><br>Link to message : {msg_link}  <br>Sincerely,<br>Ava, BOT Coding Club'
+                    html_content= f'{msg_cont} <br>-{guild_name} <br><br>Link to message : {msg_link}  <br>Sincerely,<br>Ava, BOT Coding Club'
                     )
                 email_message.personalizations[0].add_cc(Email("codingclub@iitjammu.ac.in"))
                 if(self.DEBUG == False):
