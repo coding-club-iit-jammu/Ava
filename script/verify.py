@@ -75,7 +75,7 @@ class Verify(commands.Cog):
             if(ctx.author.id != int(user_ex['discordid'])):
                 return await ctx.send("One discord Id already registered")
         await logs.print(f'{ctx.author.mention} tried to join having entry number {entry_number}')
-        #return await ctx.send(f'We no longer accept Members Contact Core team')
+        return await ctx.send(f'We`ve stopped entries temporarily, Contact Core team')
         timeout = 3
         entry_number = entry_number.upper()
         if(check_entry_number(entry_number) == False):
