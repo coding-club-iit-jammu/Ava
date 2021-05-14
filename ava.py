@@ -1,4 +1,5 @@
-import os, asyncio
+import os
+import asyncio
 import discord
 import random
 from dotenv import load_dotenv
