@@ -33,12 +33,14 @@ def match(a, b):
     if(a1 == b1):
         return True
     return False
-
+intents = discord.Intents.default()
+intents.members = True
 #client = discord.Client()
 bot = commands.Bot(
         command_prefix='.',
         description='Coding Club IIT Jammu Discord BOT',
-        case_insensitive=True    
+        case_insensitive=True ,
+        intents = intents  
     )
 
 bot.load_extension('script.verify')
