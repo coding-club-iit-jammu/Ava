@@ -48,7 +48,7 @@ class Verify(commands.Cog):
         print(entry_number)
         if((entry_number[4] == 'U' and int(entry_number[:4]) > 2017 ) or (entry_number[4] == 'P' and int(entry_number[:4]) >= 2020 ) or entry_number[4] == 'R'):
             roles = entry_number[:5]+"G"
-        elif(int(entry_number[:4]) <= 2016):
+        else:
             roles = "Alumni"
         print(roles)
         try:
