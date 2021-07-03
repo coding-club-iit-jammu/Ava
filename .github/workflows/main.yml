@@ -35,7 +35,7 @@ jobs:
           sudo pm2 delete ava
           cp -r -f ./bots/ava-tmp/* ./bots/ava/
           rm -r bots/ava-tmp
-          cd bots/raju
+          cd bots/ava
           source venv/bin/activate
           pip install -r requirements.txt
           sudo pm2 start ava.py --no-autorestart --interpreter $(pwd)/venv/bin/python
