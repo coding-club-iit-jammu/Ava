@@ -41,4 +41,4 @@ SENDGRID_API_KEY = <sendgrid_key_optional_with_DEBUG>
 
 You can create a demo server and a bot application for testing purpose. Details [here](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot).
 
-1. Push the changes in a separate branch and create a pull request. After the PR is merged, it will be automatically deployed to Azure VM via Azure Pipelines.
+8. Push the changes in a separate branch and create a pull request. After the PR is merged, it will be automatically deployed to Azure VM via Azure Pipelines.
