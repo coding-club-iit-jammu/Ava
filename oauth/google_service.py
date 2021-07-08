@@ -81,4 +81,4 @@ class UserNotValidatedException(Exception):
 
     def __init__(self, expression, message):
         self.expression = expression
-        self.message = 'The users google account is not verified yet.'
+        self.message = 'The user\'s google account is not verified yet.'
