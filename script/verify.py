@@ -158,7 +158,7 @@ class Verify(commands.Cog):
         except UserNotValidatedException:
             return False
         else:
-            if entry_number.upper() + '@iitjammu.ac.in' == user_email:
+            if entry_number.lower() + '@iitjammu.ac.in' == user_email:
                 return True
         return False
 
