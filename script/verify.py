@@ -139,7 +139,7 @@ class Verify(commands.Cog):
         verication_message = 'Please visit the following link for verification: {}'
 
         await ctx.send(f'Name : {name}\nEntry Number : {entry_number}\n' +
-            verication_message.format(auth_url))
+            verication_message.format(auth_url[0]))
 
         print(ctx.author, 'Verification Started')
         await logs.print(f'{ctx.author.mention} started Verification')
