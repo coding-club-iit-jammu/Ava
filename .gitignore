@@ -1,5 +1,7 @@
 __pycache__
+venv/
 .venv
 .vscode
 .env
+client_secret.json
 codingclub_key.pem

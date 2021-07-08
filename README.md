@@ -11,7 +11,7 @@ The discord bot for our Coding Club IIT Jammu discord(development server) writte
 - Database API - MongoDB API
 - Deploy: Azure Pipelines
 - Server: Azure Virtual Machine
-    
+
 # Instructions to Run locally and contribute
 1. Install [Python](https://www.python.org/downloads/).
 2. Clone this repository and open terminal, change directory to the repo.
@@ -30,6 +30,15 @@ LOG_CHANNEL = <log_channel_id>
 DEPARTMENT_MESSAGE = <department_selection_message>
 SENDGRID_API_KEY = <sendgrid_key_optional_with_DEBUG>
 ```
+
+7. For using Google OAuth 2.0 for verifying users.
+   - Register a project on Google Cloud Platform
+   - Goto API & Services dashboard.
+   - Consider Constent Screen. `userinfo.email` scope is required to run this application.
+   - Create a new Credential (Oauth Client ID). Select application type `Desktop app`.
+   - Download `client_secret.json` file and place it at the project root.
+   - Enjoy!
+
 You can create a demo server and a bot application for testing purpose. Details [here](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot).
 
-7. Push the changes in a separate branch and create a pull request. After the PR is merged, it will be automatically deployed to Azure VM via Azure Pipelines.
+1. Push the changes in a separate branch and create a pull request. After the PR is merged, it will be automatically deployed to Azure VM via Azure Pipelines.
