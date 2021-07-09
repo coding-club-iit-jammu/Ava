@@ -10,7 +10,7 @@ from sendgrid.helpers.mail import Mail
 
 from pymongo import MongoClient
 
-from oauth.google_auth_service import GoogleAuthService, UserNotValidatedException
+from oauth.google_auth_service import GoogleAuthService, UserNotVerifiedException
 
 from .log import log_emit
 
@@ -83,7 +83,7 @@ class Verify(commands.Cog):
             return await ctx.send("Invalid Entry Number")
         email = entry_number + "@iitjammu.ac.in"
 
-        if(self.authorize_user(ctx, logs, name, entry_number)):
+        if(await self.authorize_user(ctx, logs, name, entry_number) == True):
             await logs.print(f'{ctx.author.mention} verified')
             role = discord.utils.get(guild.roles, name="Verified")
             member = guild.get_member(ctx.author.id)
@@ -134,8 +134,11 @@ class Verify(commands.Cog):
         await ctx.send("Roles Updated")
 
     async def authorize_user(self, ctx, logs, name, entry_number):
-        google_auth_service = GoogleAuthService()
-        auth_url = google_auth_service.auth_url()
+        try:
+            google_auth_service = GoogleAuthService()
+            auth_url = google_auth_service.auth_url()
+        except Exception as err:
+            await logs.print(err)
         verication_message = 'Please visit the following link for verification: {}'
 
         await ctx.send(f'Name : {name}\nEntry Number : {entry_number}\n' +
@@ -145,9 +148,9 @@ class Verify(commands.Cog):
         await logs.print(f'{ctx.author.mention} started Verification')
 
         try:
-            authorization_code = await self.bot.wait_for(
+            authorization_code = (await self.bot.wait_for(
                 'message', check=lambda message: message.author == ctx.author,
-                timeout = 180)
+                timeout = 180)).content
         except asyncio.TimeoutError:
             await ctx.send(f"{ctx.author} Verification Time Out")
             return await logs.print(f'{ctx.author.mention} verification Timeout')
@@ -155,8 +158,10 @@ class Verify(commands.Cog):
         try:
             user_email = google_auth_service.validate_and_get_user_email(
                 authorization_code)
-        except UserNotValidatedException:
+        except UserNotVerifiedException:
             return False
+        except Exception as err:
+            await logs.print(err)
         else:
             if entry_number.lower() + '@iitjammu.ac.in' == user_email:
                 return True

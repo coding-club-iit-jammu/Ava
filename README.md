@@ -31,13 +31,12 @@ DEPARTMENT_MESSAGE = <department_selection_message>
 SENDGRID_API_KEY = <sendgrid_key_optional_with_DEBUG>
 ```
 
-7. For using Google OAuth 2.0 for verifying users.
+7. For using Google OAuth 2.0 to verify users.
    - Register a project on Google Cloud Platform
    - Goto API & Services dashboard.
-   - Consider Constent Screen. `userinfo.email` scope is required to run this application.
+   - Configure Consent Screen. `userinfo.email` scope is required to run this application.
    - Create a new Credential (Oauth Client ID). Select application type `Desktop app`.
    - Download `client_secret.json` file and place it at the project root.
-   - Enjoy!
 
 You can create a demo server and a bot application for testing purpose. Details [here](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot).
 

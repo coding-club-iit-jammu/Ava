@@ -66,13 +66,13 @@ class GoogleAuthService():
         user_info = oauth2.userinfo().get().execute()
 
         if user_info['verified_email'] == False:
-            raise UserNotValidatedException
+            raise UserNotVerifiedException
 
         return user_info['email']
 
 
-class UserNotValidatedException(Exception):
-    """Raised when user tries to validate using a non-validated google account.
+class UserNotVerifiedException(Exception):
+    """Raised when user tries to validate using a non-verified google account.
 
     Attributes:
         expression -- input expression in which the error occurred.
