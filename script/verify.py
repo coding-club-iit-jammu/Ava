@@ -139,6 +139,8 @@ class Verify(commands.Cog):
             auth_url = google_auth_service.auth_url()
         except Exception as err:
             await logs.print(err)
+            return False
+
         verication_message = 'Please visit the following link for verification: {}'
 
         await ctx.send(f'Name : {name}\nEntry Number : {entry_number}\n' +
@@ -158,13 +160,21 @@ class Verify(commands.Cog):
         try:
             user_email = google_auth_service.validate_and_get_user_email(
                 authorization_code)
-        except UserNotVerifiedException:
-            return False
+        except UserNotVerifiedException as e:
+            await logs.print(ctx.author, e.message)
         except Exception as err:
             await logs.print(err)
         else:
             if entry_number.lower() + '@iitjammu.ac.in' == user_email:
                 return True
+            else:
+                # Handle account and entry number mismatch
+                await ctx.send('Your verification account doesnot match with the entry number\n' +
+                                'Please, check for typing errors')
+                await logs.print(ctx.author, 'Tried to verify using wrong entry number : ' +
+                                 entry_number)
+                await logs.print(ctx.author, f'provided entry number {entry_number} and used {user_email} id')
+
         return False
 
 
