@@ -10,6 +10,8 @@ from sendgrid.helpers.mail import Mail
 
 from pymongo import MongoClient
 
+from oauth.google_auth_service import GoogleAuthService, UserNotVerifiedException
+
 from .log import log_emit
 
 uri = os.getenv('MONGODB')
@@ -36,7 +38,6 @@ def check_entry_number(enum):
 class Verify(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -81,36 +82,8 @@ class Verify(commands.Cog):
         if(check_entry_number(entry_number) == False):
             return await ctx.send("Invalid Entry Number")
         email = entry_number + "@iitjammu.ac.in"
-        verf_msg = f"An email with Verification Code has been sent to {email}. Enter your code here within {timeout} minutes."
-        code = random_with_N_digits(6)
-        
-        print(ctx.author, "verification Started")
-        await logs.print(f'{ctx.author.mention} started Verification')
 
-        message = Mail(
-            from_email='Ava-noreply@'+os.getenv('EMAIL_DOMAIN'),
-            to_emails=email,
-            subject='Coding Club Discord Server',
-            html_content= f'Thanks {entry_number} for creating account on Coding Club Discord Server,<br>Your Verification Code is : <b>{code}</b><br>This Code will Expire in 3 Minutes.<br><br>Sincerely,<br>Ava, BOT Coding Club'
-            )
-        try:
-            if(DEBUG == False):
-                sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
-                response = sg.send(message)
-                print(response.status_code)
-            else:
-                print(message)
-        except Exception as e:
-            print(e.message)
-        await ctx.send(f'Name : {name}\nEntry Number : {entry_number}\n{verf_msg}')
-        try:
-            code_got = await self.bot.wait_for('message', check=lambda message: message.author == ctx.author, timeout = 180)
-        except asyncio.TimeoutError:
-            await ctx.send(f"{ctx.author} Verification Time Out")
-            return await logs.print(f'{ctx.author.mention} verification Timeout')
-        if(code_got.content[0] == "."):
-            return
-        if(code_got.content == str(code)):
+        if(await self.authorize_user(ctx, logs, name, entry_number) == True):
             await logs.print(f'{ctx.author.mention} verified')
             role = discord.utils.get(guild.roles, name="Verified")
             member = guild.get_member(ctx.author.id)
@@ -136,6 +109,7 @@ class Verify(commands.Cog):
         else:
             await ctx.send(f"not verified {ctx.author}")
             await logs.print(f'{ctx.author.mention} verification failed')
+
     @commands.command()
     @commands.has_role('Admin')
     @commands.cooldown(1, 60, commands.BucketType.channel)
@@ -159,6 +133,41 @@ class Verify(commands.Cog):
                 await self.give_roles(member, mem_entry)
         await ctx.send("Roles Updated")
 
+    async def authorize_user(self, ctx, logs, name, entry_number):
+        try:
+            google_auth_service = GoogleAuthService()
+            auth_url = google_auth_service.auth_url()
+        except Exception as err:
+            await logs.print(err)
+        verication_message = 'Please visit the following link for verification: {}'
+
+        await ctx.send(f'Name : {name}\nEntry Number : {entry_number}\n' +
+            verication_message.format(auth_url[0]))
+
+        print(ctx.author, 'Verification Started')
+        await logs.print(f'{ctx.author.mention} started Verification')
+
+        try:
+            authorization_code = (await self.bot.wait_for(
+                'message', check=lambda message: message.author == ctx.author,
+                timeout = 180)).content
+        except asyncio.TimeoutError:
+            await ctx.send(f"{ctx.author} Verification Time Out")
+            return await logs.print(f'{ctx.author.mention} verification Timeout')
+
+        try:
+            user_email = google_auth_service.validate_and_get_user_email(
+                authorization_code)
+        except UserNotVerifiedException:
+            return False
+        except Exception as err:
+            await logs.print(err)
+        else:
+            if entry_number.lower() + '@iitjammu.ac.in' == user_email:
+                return True
+        return False
+
+
 def setup(bot):
-    print("-----",server)   
+    print("-----",server)
     bot.add_cog(Verify(bot))
