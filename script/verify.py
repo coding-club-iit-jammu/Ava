@@ -160,8 +160,8 @@ class Verify(commands.Cog):
         try:
             user_email = google_auth_service.validate_and_get_user_email(
                 authorization_code)
-        except UserNotVerifiedException as e:
-            await logs.print(ctx.author, e.message)
+        except UserNotVerifiedException:
+            await logs.print(f'{ctx.author.mention} tried to verify using non verified google account')
         except Exception as err:
             await logs.print(err)
         else:
@@ -171,9 +171,8 @@ class Verify(commands.Cog):
                 # Handle account and entry number mismatch
                 await ctx.send('Your verification account doesnot match with the entry number\n' +
                                 'Please, check for typing errors')
-                await logs.print(ctx.author, 'Tried to verify using wrong entry number : ' +
-                                 entry_number)
-                await logs.print(ctx.author, f'provided entry number {entry_number} and used {user_email} id')
+                await logs.print(f'{ctx.author.mention} tried to verify using wrong entry number : {entry_number}')
+                await logs.print(f'{ctx.author.mention} provided entry number {entry_number} and used {user_email}')
 
         return False
 
