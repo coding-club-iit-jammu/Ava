@@ -165,6 +165,10 @@ class Verify(commands.Cog):
         else:
             if entry_number.lower() + '@iitjammu.ac.in' == user_email:
                 return True
+        await ctx.send('Your verification account doesnot match with the entry number\n' +
+                        'Please, check for typing errors')
+        await logs.print(ctx.author, 'Tried to verify using wrong entry number : ' + entry_number)
+        await logs.print(ctx.author, f'Provided entry number {entry_number} and used {user_email} id')
         return False
 
 
