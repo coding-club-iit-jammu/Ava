@@ -143,7 +143,8 @@ class Verify(commands.Cog):
 
         verication_message = (
             'Please visit the following link for verification and send back '
-            'the authorization code provided at the end of authorization: {}')
+            'the authorization code provided at the end of authorization: {}'
+        )
 
         await ctx.send(f'Name : {name}\nEntry Number : {entry_number}\n' +
             verication_message.format(auth_url[0]))
