@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import discord
@@ -33,6 +34,25 @@ def check_entry_number(enum):
     en = enum[7:]
     if(year.isdigit() and branch.isalpha() and en.isdigit()):
         return True
+    return False
+
+def is_2021_student(enum):
+    year = enum[0:4]
+    if year == "2021":
+        return True
+    return False
+
+path = os.path.realpath(
+  os.path.join(
+    os.path.dirname(__file__), '..', 'data', '2021_selected_students.json'))
+
+def is_2021_student_selected(email):
+    with open(path) as rf:
+        data = json.load(rf)
+
+    if email.lower() in data['students']:
+        return True
+
     return False
 
 class Verify(commands.Cog):
@@ -82,6 +102,10 @@ class Verify(commands.Cog):
         if(check_entry_number(entry_number) == False):
             return await ctx.send("Invalid Entry Number")
         email = entry_number + "@iitjammu.ac.in"
+
+        if is_2021_student(entry_number) and not is_2021_student_selected(email):
+            await logs.print(f'{ctx.author.mention} tried to join having entry number {entry_number} but was not allowed')
+            return await ctx.send("Student with the given id was not selected in the club")
 
         if(await self.authorize_user(ctx, logs, name, entry_number) == True):
             await logs.print(f'{ctx.author.mention} verified')
