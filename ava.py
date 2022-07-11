@@ -74,8 +74,9 @@ async def on_member_join(member):
 async def leave(ctx):
     if(ctx.message.author.id != AUTHOR):
         return
-    role = discord.utils.get(guild.roles, name = 'Verified')
-    await dep_channel.set_permissions(role, read_messages=False )
+    # Pausing self dept selection flow
+    # role = discord.utils.get(guild.roles, name = 'Verified')
+    # await dep_channel.set_permissions(role, read_messages=False )
     await ctx.send('Leaving server. BYE!')
     await logs.print(f'{bot.user.mention} leaving Server! command from {ctx.author}.')
     await bot.close()
