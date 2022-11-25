@@ -96,16 +96,16 @@ class Verify(commands.Cog):
             if(ctx.author.id != int(user_ex['discordid'])):
                 return await ctx.send("One discord Id already registered")
         await logs.print(f'{ctx.author.mention} tried to join having entry number {entry_number}')
-        return await ctx.send(f'We`ve stopped entries temporarily, Contact Core team')
+        # return await ctx.send(f'We`ve stopped entries temporarily, Contact Core team')
         timeout = 3
         entry_number = entry_number.upper()
         if(check_entry_number(entry_number) == False):
             return await ctx.send("Invalid Entry Number")
         email = entry_number + "@iitjammu.ac.in"
 
-        if is_2021_student(entry_number) and not is_2021_student_selected(email):
-            await logs.print(f'{ctx.author.mention} tried to join having entry number {entry_number} but was not allowed')
-            return await ctx.send("Student with the given id was not selected in the club")
+#         if is_2021_student(entry_number) and not is_2021_student_selected(email):
+#             await logs.print(f'{ctx.author.mention} tried to join having entry number {entry_number} but was not allowed')
+#             return await ctx.send("Student with the given id was not selected in the club")
 
         if(await self.authorize_user(ctx, logs, name, entry_number) == True):
             await logs.print(f'{ctx.author.mention} verified')
